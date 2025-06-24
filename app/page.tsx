@@ -1,4 +1,5 @@
 import TextToSpeech from './components/TextToSpeech';
+import AudioToText from './components/AudioToText';
 import Link from 'next/link';
 import { FaGraduationCap, FaGithub, FaArrowRight } from 'react-icons/fa';
 
@@ -12,6 +13,14 @@ export default function Home() {
         <p className="text-xl text-white max-w-3xl mx-auto">
           Experimenta el poder de Google Gemini para generar voces naturales y expresivas a partir de texto.
         </p>
+      </div>
+
+      {/* Sección de voz a texto con micrófono */}
+      <div className="bg-indigo-900 rounded-xl shadow-lg overflow-hidden mb-8">
+        <div className="p-6 md:p-8">
+          <h2 className="text-2xl font-bold text-white mb-4">Transcribe tu voz a texto</h2>
+          <AudioToText />
+        </div>
       </div>
 
       <div className="bg-indigo-900 rounded-xl shadow-lg overflow-hidden">

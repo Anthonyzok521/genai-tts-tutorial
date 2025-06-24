@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FaHome, FaGraduationCap, FaGithub } from 'react-icons/fa';
+import { FaHome, FaGraduationCap, FaGithub, FaMicrophone } from 'react-icons/fa';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -10,6 +10,7 @@ export default function Navbar() {
   const navItems = [
     { name: 'Inicio', href: '/', icon: <FaHome className="mr-2" /> },
     { name: 'Aprende', href: '/learn', icon: <FaGraduationCap className="mr-2" /> },
+    { name: 'Aprende STT', href: '/learn-stt', icon: <FaMicrophone className="mr-2" /> },
   ];
 
   return (

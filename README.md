@@ -9,20 +9,35 @@
 > 📺 **¡Ya está disponible el video de este tutorial en YouTube!**
 > [![Ver en YouTube](https://img.shields.io/badge/Ver_en_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=7IAZYRKqtl0)
 
-Convierte texto en voz natural con la API de Google GenAI
+Convierte texto en voz natural y transcribe voz a texto con la API de Google GenAI
 
-Este proyecto es un tutorial interactivo y moderno que te enseña a utilizar la API de Google GenAI para generar audio a partir de texto (Text-to-Speech, TTS) usando una interfaz web creada con Next.js y React.
+Este proyecto es un tutorial interactivo y moderno que te enseña a utilizar la API de Google GenAI para:
+- Generar audio a partir de texto (Text-to-Speech, TTS)
+- Transcribir voz a texto (Speech-to-Text, STT) usando tu micrófono
+Todo desde una interfaz web creada con Next.js y React.
 
 ## 🚀 Características principales
 
 - **Interfaz moderna en dark mode** con diseño responsive y componentes visuales atractivos.
-- **Probador interactivo**: ingresa texto y obtén audio generado por la API de Google Gemini.
-- **Explicaciones didácticas** sobre el funcionamiento de TTS y casos de uso.
+- **Probador interactivo de texto a voz**: ingresa texto y obtén audio generado por la API de Google Gemini.
+- **Probador interactivo de voz a texto**: graba tu voz con el micrófono y obtén la transcripción generada por Gemini.
+- **Explicaciones didácticas** sobre el funcionamiento de TTS y STT y casos de uso.
 - **Código fácil de personalizar** y extender para tus propios proyectos.
 
 ## 🛠️ Requisitos
 - Node.js 18+
 - Una clave de API de Google GenAI (consulta la documentación oficial para obtenerla)
+
+## 📝 Ejemplo de uso rápido: transcribir un archivo de audio
+
+Puedes transcribir un archivo de audio local (mp3, wav, webm, etc.) usando el script incluido:
+
+```bash
+node genera-texto.mjs 'Amor eterno - Juan Gabriel.mp3'
+```
+
+Esto enviará el archivo al backend y mostrará la transcripción directamente en la terminal.
+- Un navegador moderno con soporte para grabación de audio (para usar la función de voz a texto)
 
 ## ⚡ Instalación y ejecución
 
@@ -54,9 +69,16 @@ Este proyecto es un tutorial interactivo y moderno que te enseña a utilizar la 
 5. Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ## ✨ ¿Cómo funciona?
+
+### Text-to-Speech (Texto a Voz)
 - El usuario ingresa texto en la interfaz.
 - El frontend envía la solicitud a la API de Google GenAI.
 - Se recibe el audio generado y se reproduce directamente en el navegador.
+
+### Speech-to-Text (Voz a Texto)
+- El usuario graba su voz usando el micrófono desde la web.
+- El audio grabado se envía al backend, que lo procesa con la API de Gemini.
+- Se recibe y muestra la transcripción generada por IA en la web.
 
 ## 🎨 Personalización
 - Puedes modificar los estilos en `app/globals.css` y los componentes en `app/components/`.
