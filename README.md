@@ -1,4 +1,13 @@
+<div align="center">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Google%20GenAI-4285F4?style=for-the-badge" alt="Google GenAI" />
+</div>
+
 # Gemini TTS Tutorial
+
+> 📺 **¡Ya está disponible el video de este tutorial en YouTube!**
+> [![Ver en YouTube](https://img.shields.io/badge/Ver_en_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=7IAZYRKqtl0)
 
 Convierte texto en voz natural con la API de Google GenAI
 
@@ -19,8 +28,8 @@ Este proyecto es un tutorial interactivo y moderno que te enseña a utilizar la 
 
 1. Clona este repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/gemini-tts-demo.git
-   cd gemini-tts-demo
+   git clone https://github.com/imzodev/genai-tts-tutorial.git
+   cd genai-tts-tutorial
    ```
 2. Instala las dependencias:
    ```bash

@@ -52,7 +52,7 @@ export default function Home() {
           Este es un proyecto de demostración que utiliza la API de Google Gemini.
         </p>
         <a 
-          href="https://github.com/tu-usuario/gemini-tts-demo" 
+          href="https://github.com/imzodev/genai-tts-tutorial" 
           target="_blank" 
           rel="noopener noreferrer"
           className="inline-flex items-center text-white hover:text-white"

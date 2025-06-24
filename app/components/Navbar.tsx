@@ -40,7 +40,7 @@ export default function Navbar() {
           </div>
           <div className="flex items-center">
             <a
-              href="https://github.com/yourusername/gemini-tts-demo"
+              href="https://github.com/imzodev/genai-tts-tutorial"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-gray-700"
