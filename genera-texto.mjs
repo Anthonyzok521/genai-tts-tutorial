@@ -3,11 +3,25 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 
 async function main() {
-    const audioPath = process.argv[2] || 'audio-ejemplo.mp3';
-    const mimeType = audioPath.endsWith('.wav') ? 'audio/wav' :
-                     audioPath.endsWith('.mp3') ? 'audio/mp3' :
-                     audioPath.endsWith('.webm') ? 'audio/webm' :
-                     'audio/mpeg';
+    // node genera-texto.mjs audio-ejemplo.mp3
+    if (process.argv.length !== 3) {
+        console.error('Uso: node genera-texto.mjs <file>');
+        process.exit(1);
+    }
+
+    const audioPath = process.argv[2];
+    const extension = audioPath.split('.').pop().toLowerCase();
+    const mimeTypeMap = {
+        wav: 'audio/wav',
+        mp3: 'audio/mp3',
+        webm: 'audio/webm'
+    };
+
+    const mimeType = mimeTypeMap[extension];
+    if (!mimeType) {
+        console.error('Extensión no soportada:', extension);
+        process.exit(1);
+    }
 
     const form = new FormData();
     const audioBuffer = await fs.readFile(audioPath);
@@ -29,7 +43,9 @@ async function main() {
 
     const data = await res.json();
     console.log('Transcripción:');
-    console.log(data.text || data.transcript || data);
+    console.log(data.text);
+
+
 }
 
 main();
