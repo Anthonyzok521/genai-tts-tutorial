@@ -1,7 +1,7 @@
 {
-  "name": "genai-tts-tutorial",
-  "version": "0.1.0",
-  "private": true,
+  "name": "ai-context-audio",
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",

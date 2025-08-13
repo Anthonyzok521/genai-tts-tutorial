@@ -9,11 +9,13 @@ type VoiceOption = {
   description: string;
 };
 
+type ResponseContextAI = { status: number, message: string }
+
 const VOICE_OPTIONS: VoiceOption[] = [
   { id: 'Puck', name: 'Puck', description: 'Voz alegre y juvenil' },
-  { id: 'Kore', name: 'Kore', description: 'Voz clara y profesional' },
+  /* { id: 'Kore', name: 'Kore', description: 'Voz clara y profesional' },
   { id: 'Zephyr', name: 'Zephyr', description: 'Voz suave y cálida' },
-  { id: 'Charon', name: 'Charon', description: 'Voz profunda y seria' },
+  { id: 'Charon', name: 'Charon', description: 'Voz profunda y seria' }, */
 ];
 
 export default function TextToSpeech() {
@@ -32,7 +34,7 @@ export default function TextToSpeech() {
   // Limpiar recursos cuando el componente se desmonte
   useEffect(() => {
     const currentAudio = audioRef.current;
-    
+
     return () => {
       if (currentAudio) {
         currentAudio.pause();
@@ -80,7 +82,7 @@ export default function TextToSpeech() {
 
   const handlePlayPause = () => {
     if (!audioRef.current) return;
-    
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -94,14 +96,14 @@ export default function TextToSpeech() {
   };
 
   const handleSpeak = async () => {
-    if (!text.trim()) {
+    /* if (!text.trim()) {
       setError('Por favor ingresa un texto para convertir a voz');
       return;
-    }
-    
+    } */
+
     setIsLoading(true);
     setError(null);
-    
+
     // Limpiar el elemento de audio y estado anterior
     if (audioRef.current) {
       try {
@@ -113,27 +115,41 @@ export default function TextToSpeech() {
         console.warn('Error al limpiar el reproductor de audio:', e);
       }
     }
-    
+
     // Limpiar URL de audio anterior si existe
     if (audioUrl) {
       URL.revokeObjectURL(audioUrl);
       setAudioUrl(null);
     }
-    
+
     setCurrentTime(0);
     setAudioDuration(0);
     setIsPlaying(false);
-    
+
     console.log('Iniciando solicitud de generación de voz...');
-    
+
     try {
       console.log('Solicitando generación de audio...');
-      
+
+      //Obtener mensaje
+      const msg = await fetch('/api/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: "Crea frases o haz chistes, tambien puedes dar conteos de despegue espacial" }),
+      });
+
+      if (!msg.ok) {
+        console.log("No se pudo obtener el mensaje");
+        return;
+      }
+
+      const text = await msg.json() as ResponseContextAI;
+
       // 1. Obtener el audio del servidor
       const response = await fetch('/api/generate-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text: text.message }),
       });
 
       if (!response.ok) {
@@ -153,7 +169,7 @@ export default function TextToSpeech() {
       // 2. Obtener el tipo de contenido de la respuesta
       const responseContentType = response.headers.get('content-type') || 'audio/wav';
       console.log('Tipo de contenido de la respuesta:', responseContentType);
-      
+
       if (!responseContentType.includes('audio/')) {
         const errorData = await response.text();
         console.error('Respuesta inesperada del servidor:', errorData);
@@ -162,31 +178,31 @@ export default function TextToSpeech() {
 
       // 3. Obtener los datos binarios
       const audioData = await response.arrayBuffer();
-      
+
       if (!audioData || audioData.byteLength === 0) {
         throw new Error('El audio generado está vacío');
       }
-      
+
       console.log(`Tamaño del audio: ${audioData.byteLength} bytes`);
-      
+
       // 4. Crear un blob con el tipo de contenido WAV
       const audioBlob = new Blob([audioData], { type: 'audio/wav' });
-      
+
       // 5. Crear una URL para el blob
       const audioUrl = URL.createObjectURL(audioBlob);
       console.log('URL del audio creada:', audioUrl.substring(0, 50) + '...');
       console.log('Tipo MIME del blob:', audioBlob.type);
-      
+
       // 6. Verificar que el blob no esté vacío
       if (audioBlob.size === 0) {
         throw new Error('El blob de audio está vacío');
       }
-      
+
       // 5. Configurar el elemento de audio
       if (audioRef.current) {
         // Configurar manejadores de eventos
         const audioElement = audioRef.current;
-        
+
         const handleError = (e: Event | string) => {
           const errorEvent = typeof e === 'string' ? new Event(e) : e;
           console.error('Error en el elemento de audio:', errorEvent);
@@ -199,33 +215,33 @@ export default function TextToSpeech() {
           setError('Error al cargar o reproducir el audio. Intenta de nuevo.');
           setIsLoading(false);
         };
-        
+
         const handleLoadedData = () => {
           console.log('Audio cargado correctamente');
           console.log('Duración del audio:', audioElement.duration);
           console.log('Formato del audio:', audioElement.src?.split('.').pop() || 'desconocido');
         };
-        
+
         const handlePlay = () => {
           console.log('Reproduciendo audio...');
           setError(null);
           setIsLoading(false);
         };
-        
+
         // Limpiar manejadores anteriores
         audioElement.onerror = null;
         audioElement.onloadeddata = null;
         audioElement.onplay = null;
-        
+
         // Asignar nuevos manejadores
         audioElement.onerror = handleError;
         audioElement.onloadeddata = handleLoadedData;
         audioElement.onplay = handlePlay;
-        
+
         // Configurar la fuente del audio
         audioElement.src = audioUrl;
         console.log('Fuente de audio establecida, cargando...');
-        
+
         // Configurar manejador para cuando el audio se pueda reproducir
         const handleCanPlay = () => {
           console.log('El audio está listo para reproducirse');
@@ -240,7 +256,7 @@ export default function TextToSpeech() {
               setIsLoading(false);
             });
         };
-        
+
         // Configurar manejador de error de carga
         const handleLoadError = (e: Event | string) => {
           const errorEvent = typeof e === 'string' ? new Event(e) : e;
@@ -253,15 +269,15 @@ export default function TextToSpeech() {
           setError('Error al cargar el archivo de audio. Intenta de nuevo.');
           setIsLoading(false);
         };
-        
+
         // Limpiar manejadores anteriores
         audioElement.oncanplay = null;
         audioElement.onerror = null;
-        
+
         // Asignar nuevos manejadores
         audioElement.oncanplay = handleCanPlay;
         audioElement.onerror = handleLoadError;
-        
+
         // Forzar la carga del audio
         audioElement.load();
       }
@@ -269,7 +285,7 @@ export default function TextToSpeech() {
     } catch (error) {
       console.error('Error en handleSpeak:', error);
       let errorMessage = 'Ocurrió un error al generar el audio';
-      
+
       if (error instanceof Error) {
         if (error.message.includes('Failed to fetch')) {
           errorMessage = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
@@ -281,7 +297,7 @@ export default function TextToSpeech() {
           errorMessage = error.message;
         }
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -291,11 +307,11 @@ export default function TextToSpeech() {
   const base64ToBlob = (base64: string, type: string) => {
     const byteCharacters = atob(base64);
     const byteNumbers = new Array(byteCharacters.length);
-    
+
     for (let i = 0; i < byteCharacters.length; i++) {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
-    
+
     const byteArray = new Uint8Array(byteNumbers);
     return new Blob([byteArray], { type });
   };
@@ -305,27 +321,27 @@ export default function TextToSpeech() {
       setError('Por favor ingresa un texto para descargar');
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/download-speech', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           text,
           voice: selectedVoice // Incluir la voz seleccionada
         }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Error al descargar el audio');
       }
-      
+
       // Crear un enlace temporal para la descarga
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -334,7 +350,7 @@ export default function TextToSpeech() {
       a.download = `voz-${selectedVoice}-${Date.now()}.wav`;
       document.body.appendChild(a);
       a.click();
-      
+
       // Limpiar
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
@@ -348,11 +364,11 @@ export default function TextToSpeech() {
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressRef.current || !audioRef.current) return;
-    
+
     const rect = progressRef.current.getBoundingClientRect();
     const pos = (e.clientX - rect.left) / rect.width;
     const newTime = pos * audioDuration;
-    
+
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -365,7 +381,7 @@ export default function TextToSpeech() {
 
   return (
     <div className="space-y-6 text-indigo-100 bg-slate-800 p-6 rounded-lg">
-      <div>
+      {/*  <div>
         <label htmlFor="text-input" className="block text-sm font-medium text-indigo-100 mb-2">
           Escribe tu texto:
         </label>
@@ -377,10 +393,10 @@ export default function TextToSpeech() {
           placeholder="Escribe o pega tu texto aquí..."
           disabled={isLoading}
         />
-      </div>
-  
+      </div> */}
+
       {/* Selector de voz */}
-      <div className="relative">
+      {/* <div className="relative">
         <label className="block text-sm font-medium text-indigo-100 mb-2">
           Selecciona una voz:
         </label>
@@ -424,8 +440,8 @@ export default function TextToSpeech() {
             </div>
           )}
         </div>
-      </div>
-  
+      </div> */}
+
       {/* Controles de audio */}
       <div className="space-y-4">
         {audioUrl && (
@@ -438,7 +454,7 @@ export default function TextToSpeech() {
               >
                 {isPlaying ? <FaStop className="h-5 w-5" /> : <FaPlay className="h-5 w-5 ml-1" />}
               </button>
-  
+
               <div className="flex-1">
                 <div
                   ref={progressRef}
@@ -461,9 +477,9 @@ export default function TextToSpeech() {
             </div>
           </div>
         )}
-  
+
         {/* Botón de descarga */}
-        <div className="flex justify-center">
+        {/* <div className="flex justify-center">
           <button
             onClick={handleDownload}
             disabled={isLoading || !text.trim()}
@@ -472,19 +488,18 @@ export default function TextToSpeech() {
             <FaDownload className="mr-2 h-5 w-5" />
             Descargar Audio WAV
           </button>
-        </div>
+        </div> */}
       </div>
-  
+
       {/* Acción principal */}
       <div className="pt-2">
         <button
           onClick={handleSpeak}
           disabled={isLoading || !text.trim()}
-          className={`w-full px-6 py-3 rounded-lg text-white font-medium transition-all duration-200 flex items-center justify-center ${
-            isLoading || !text.trim()
-              ? 'bg-indigo-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700 transform hover:scale-[1.02]'
-          }`}
+          className={`w-full px-6 py-3 rounded-lg text-white font-medium transition-all duration-200 flex items-center justify-center ${isLoading || !text.trim()
+            ? 'bg-indigo-400 cursor-not-allowed'
+            : 'bg-indigo-600 hover:bg-indigo-700 transform hover:scale-[1.02]'
+            }`}
         >
           {isLoading ? (
             <>
@@ -502,7 +517,7 @@ export default function TextToSpeech() {
           )}
         </button>
       </div>
-  
+
       {error && (
         <div className="p-4 bg-red-900 border-l-4 border-red-500 rounded-md">
           <div className="flex">
@@ -515,7 +530,7 @@ export default function TextToSpeech() {
           </div>
         </div>
       )}
-  
+
       <audio
         ref={audioRef}
         className="hidden"
@@ -537,34 +552,7 @@ export default function TextToSpeech() {
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}
       />
-  
-      {/* Instrucciones */}
-      <div className="mt-8 p-5 bg-indigo-800 border border-indigo-700 rounded-lg">
-        <h2 className="text-lg font-semibold text-white mb-3">¿Cómo funciona?</h2>
-        <ol className="list-decimal pl-5 space-y-2 text-indigo-100">
-          <li>Escribe o pega el texto que deseas convertir a voz</li>
-          <li>Haz clic en "Reproducir voz"</li>
-          <li>Escucha la generación de voz de Gemini</li>
-        </ol>
-  
-        {!process.env.NEXT_PUBLIC_GEMINI_API_KEY && (
-          <div className="mt-4 p-3 bg-yellow-900 border-l-4 border-yellow-500">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm text-yellow-100">
-                  <span className="font-medium">Nota:</span> Asegúrate de configurar la variable de entorno <code className="bg-yellow-800 px-1 rounded">GEMINI_API_KEY</code> en tu archivo <code className="bg-yellow-800 px-1 rounded">.env.local</code>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
-  
+
 }

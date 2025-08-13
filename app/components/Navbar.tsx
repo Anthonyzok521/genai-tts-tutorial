@@ -9,8 +9,8 @@ export default function Navbar() {
   
   const navItems = [
     { name: 'Inicio', href: '/', icon: <FaHome className="mr-2" /> },
-    { name: 'Aprende', href: '/learn', icon: <FaGraduationCap className="mr-2" /> },
-    { name: 'Aprende STT', href: '/learn-stt', icon: <FaMicrophone className="mr-2" /> },
+   /*  { name: 'Aprende', href: '/learn', icon: <FaGraduationCap className="mr-2" /> },
+    { name: 'Aprende STT', href: '/learn-stt', icon: <FaMicrophone className="mr-2" /> }, */
   ];
 
   return (
@@ -20,7 +20,7 @@ export default function Navbar() {
           <div className="flex
           ">
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-indigo-600">Gemini TTS</span>
+              <span className="text-xl font-bold text-indigo-600">IA CONTEX-AUDIO</span>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navItems.map((item) => (
@@ -38,17 +38,7 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
-          </div>
-          <div className="flex items-center">
-            <a
-              href="https://github.com/imzodev/genai-tts-tutorial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <FaGithub className="h-6 w-6" />
-            </a>
-          </div>
+          </div>          
         </div>
       </div>
 

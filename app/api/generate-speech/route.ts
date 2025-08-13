@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
+            prebuiltVoiceConfig: { voiceName: 'Puck' },
           },
         },
       },
